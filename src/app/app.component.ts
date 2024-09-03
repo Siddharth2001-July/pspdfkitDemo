@@ -1,39 +1,46 @@
-import { Component } from "@angular/core";
-import PSPDFKit from "pspdfkit";
+import { Component } from '@angular/core';
+import PSPDFKit, { Instance } from 'pspdfkit';
 
 @Component({
-  selector: "app-root",
-  templateUrl: "./app.component.html",
-  styleUrls: ["app.component.css"],
-  standalone: true
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['app.component.css'],
+  standalone: true,
 })
 export class AppComponent {
-  title = "PSPDFKit for Web Angular Example";
+  title = 'PSPDFKit for Web Angular Example';
+  instance!: Instance;
+  public downloadJSON: any;
 
-  ngAfterViewInit() {
-    PSPDFKit.load({
-      baseUrl: location.protocol + "//" + location.host + "/assets/",
-      document: "/assets/document.pdf",
-      container: "#pspdfkit-container",
-    }).then(async (instance) => {
-      (window as any).instance = instance;
-      //Enter your search term inside the quotes
-      const results = await instance.search("Guide");
-      let wordIsInPages = [0]
-      if (results.size > 0) {
-        const annotations = results.map((result) => {
-          wordIsInPages.push(Number(result.pageIndex))
-          console.log(result)
-          return new PSPDFKit.Annotations.HighlightAnnotation({
-            pageIndex: result.pageIndex,
-            rects: result.rectsOnPage,
-            boundingBox: PSPDFKit.Geometry.Rect.union(result.rectsOnPage)
-          });
-        });
-        instance.create(annotations);
-        const newState = instance.viewState.set('currentPageIndex', wordIsInPages[1])
-        instance.setViewState(newState);
+  ngOnInit() {
+    (async () => {
+      try {
+        let data = {
+          config: {
+            delimiter: {
+              start: '{{',
+              end: '}}',
+            },
+          },
+          model: {
+            helloWorld: 'PSPDFKit',
+          },
+        };
+        const docBuffer = await PSPDFKit.populateDocumentTemplate(
+          {
+            document: '/assets/doctemp.docx',
+          } as any,
+          data as any
+        );
+      } catch (error) {
+        console.error(error);
       }
-    })
+      const instance = await PSPDFKit.load({
+        baseUrl: location.protocol + '//' + location.host + '/assets/',
+        document: "/assets/document.pdf",
+        // document: docBuffer,
+        container: '#pspdfkit-container',
+      });
+    })();
   }
 }
