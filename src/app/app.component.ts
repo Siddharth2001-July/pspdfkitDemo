@@ -29,6 +29,7 @@ export class AppComponent {
         const docBuffer = await PSPDFKit.populateDocumentTemplate(
           {
             document: '/assets/doctemp.docx',
+            baseUrl: location.protocol + '//' + location.host + '/assets/',
           } as any,
           data as any
         );
