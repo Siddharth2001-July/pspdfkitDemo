@@ -7,7 +7,8 @@
     "build": "ng build",
     "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "postinstall": "cp -r node_modules/pspdfkit/dist/ ./src/assets/"
   },
   "private": true,
   "dependencies": {
